@@ -1,4 +1,4 @@
-package rentserver.controller;
+package rentserver;
 
 import java.io.IOException;
 import java.net.BindException;
@@ -6,6 +6,7 @@ import java.net.ServerSocket;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import rentserver.controller.ClientConnectionsHandler;
 
 public class RentServer {
   private static final int PORT = 40000;

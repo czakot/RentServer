@@ -3,14 +3,17 @@ package rentserver.controller;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.Arrays;
 import java.util.LinkedList;
+import java.util.Locale;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class ClientConnection extends Thread {
   private static ClientConnectionsHandler clientConnectionsHandler;
-  private static final String[] CLIENT_UI_TYPE = {"console"};
+  private static final String WELCOME = "Welcome at Rent Server V0.1";
+  private static final String[] CLIENT_UI_TYPES = {"console"};
   private static final String[] SUPPORTED_LOCALS = {"en_US", "hu_HU"};
   private static final Logger logger = Logger.getLogger(ClientConnection.class.getName());
   
@@ -18,9 +21,7 @@ public class ClientConnection extends Thread {
   private  int id;
   private  Scanner sc;
   private  PrintWriter pw;
-  private String clientUIType = null;
-  private String clientLocals;
-  private final LinkedList<String> availableCommands = new LinkedList<>();
+  private ClientStatus clientStatus = new ClientStatus();
   
   ClientConnection(Socket clientSocket, int id) {
     this.clientSocket = clientSocket;
@@ -35,19 +36,34 @@ public class ClientConnection extends Thread {
   
   @Override
   public void run() {
+    // set initial client properties
+    // start state machine
+    // get command sequence
+    // execute command sequence
+    // update state machine
+    // wait user input or goto row3: get comm...
+    // update state machine
+    // goto row3: get comm...
+    welcomeClient();
+
     if (recognizedClientUserInterface()) {
-      clientLocals = getClientLocals();
+      /*clientLocals = */getClientLocals();
       do {
         receiveCommandFromClient();
       } while (!clientSocket.isClosed());
     }
   }
 
+  private void welcomeClient() {
+    sendToClient("message " + WELCOME);
+  }
+
   private boolean recognizedClientUserInterface() {
+    sendToClient("question_user_interface_type");
     String received = sc.nextLine();
-    for (String uiType : CLIENT_UI_TYPE) {
+    for (String uiType : CLIENT_UI_TYPES) {
       if (received.equals(uiType)) {
-        clientUIType = received;
+        clientStatus.setClientUIType(received);
         return true;
       }
     }
@@ -56,7 +72,10 @@ public class ClientConnection extends Thread {
     return false;
   }
 
-  private String getClientLocals() {
+  private void /*String*/ getClientLocals() {
+    sendToClient("question_locals");
+    clientStatus.setClientLocals(sc.nextLine());
+/*
     String received = sc.nextLine();
     for (String locals : SUPPORTED_LOCALS) {
       if (received.equals(locals)) {
@@ -65,6 +84,7 @@ public class ClientConnection extends Thread {
       }
     }
     return SUPPORTED_LOCALS[0];
+*/
   }
 
   private void receiveCommandFromClient() {
@@ -94,13 +114,18 @@ public class ClientConnection extends Thread {
   }
   
   public void terminate() {
-    synchronized(pw) {
-      pw.println("copy | terminate");
-    }
+    sendToClient("terminate");
     try {
       clientSocket.close();
     } catch (IOException ex) {
       Logger.getLogger(ClientConnection.class.getName()).log(Level.SEVERE, null, ex);
+    }
+  }
+  
+  private void sendToClient(String msg) {
+    synchronized(pw) {
+      pw.println(msg);
+      pw.flush();
     }
   }
 }
