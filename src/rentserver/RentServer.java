@@ -16,13 +16,13 @@ public class RentServer {
   
   public static void main(String[] args) throws IOException {
     
-    if (rentServerNotYetRunning(rentServerSocket)) {
-      StartRentServerComponents(rentServerSocket);
+    if (rentServerNotYetRunning()) {
+      StartRentServerComponents();
       WaitForLocalCommands();
     }
   }
 
-  private static boolean rentServerNotYetRunning(ServerSocket rentServerSocket) throws IOException {
+  private static boolean rentServerNotYetRunning() throws IOException {
     try {
       rentServerSocket = new ServerSocket(PORT);
     } catch (BindException ex) {
@@ -31,7 +31,7 @@ public class RentServer {
     return rentServerSocket != null;
   }
 
-  private static void StartRentServerComponents(ServerSocket rentServerSocket) {
+  private static void StartRentServerComponents() {
     logger.info("Client Connection Handler is starting ...");
     //TODO hand over logger as well?
     clientConnectionsHandler = ClientConnectionsHandler.create(rentServerSocket);

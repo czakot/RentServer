@@ -1,16 +1,29 @@
 package rentserver.controller;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Locale;
 
-public class ClientStatus {
+public class ClientState {
   private String clientUIType = null;
   private String clientLocals;
   private Locale clientLocale;
-  private String user="anonymus";
+  private String roletype;
+  private String user;
+
   private final LinkedList<String> availableCommands = new LinkedList<>();
   
-
+  public ClientState() {
+    roletype = "anonymus";
+    user = null;
+    String[] commandsForAnonymus = {"login", "register", "disconnect"};
+    availableCommands.addAll(Arrays.asList(commandsForAnonymus));
+  }
+  
+  public boolean isCommandAvailable(String command) {
+    return availableCommands.contains(command);
+  }
+  
   public String getClientUIType() {
     return clientUIType;
   }
@@ -36,6 +49,14 @@ public class ClientStatus {
   public void setClientLocale(Locale clientLocale) {
     this.clientLocale = clientLocale;
     clientLocals = clientLocale.toString();
+  }
+
+  public String getRoletype() {
+    return roletype;
+  }
+
+  public void setRoletype(String roletype) {
+    this.roletype = roletype;
   }
 
   public String getUser() {

@@ -11,7 +11,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class ClientConnectionsHandler extends Thread {
-  private static final int SERVER_SOCKET_TIMEOUT = 15000;
+  private static final int SERVER_SOCKET_TIMEOUT = 5000; // millisecs; should be longer ~15000
   private static ClientConnectionsHandler instance = null;
 
   private final ServerSocket rentServerSocket;
@@ -37,7 +37,6 @@ public class ClientConnectionsHandler extends Thread {
   
   @Override
   public void run() {
-    ClientConnection.setClientConnectionsHandler(this);
     while (running) {
       try {
         Socket clientSocket = rentServerSocket.accept();
@@ -80,7 +79,7 @@ public class ClientConnectionsHandler extends Thread {
 
   private Integer[] getActiveClientConnections() {
     synchronized(activeClientConnections) {
-    return (Integer[])activeClientConnections.keySet().toArray();
+    return activeClientConnections.keySet().toArray(new Integer[0]);
     }
   }
 
