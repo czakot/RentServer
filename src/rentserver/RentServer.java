@@ -26,25 +26,24 @@ public class RentServer {
     try {
       rentServerSocket = new ServerSocket(PORT);
     } catch (BindException ex) {
-      logger.info("Server already running, exiting ...");
+      logger.info("Server already running.");
     }
     return rentServerSocket != null;
   }
 
   private static void StartRentServerComponents() {
-    logger.info("Client Connection Handler is starting ...");
-    //TODO hand over logger as well?
+    logger.info("Client Connections Handler is starting ...");
     clientConnectionsHandler = ClientConnectionsHandler.create(rentServerSocket);
     clientConnectionsHandler.start();
-    logger.info("Client Connection Handler has started.");
+    logger.info("Client Connections Handler has started.");
   }
 
   private static void StopRentServerComponents() {
     try {
-      logger.info("Stopping Client Connection Handler ...");
+      logger.info("Stopping Client Connections Handler ...");
       clientConnectionsHandler.terminate();
-      clientConnectionsHandler.join();
-      logger.info("Client Connection Handler successfully stopped.");
+      clientConnectionsHandler.join(3*ClientConnectionsHandler.getSERVER_SOCKET_TIMEOUT());
+      logger.info("Client Connections Handler successfully stopped.");
     } catch (InterruptedException ex) {
       logger.log(Level.SEVERE, null, ex);
     }

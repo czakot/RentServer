@@ -11,20 +11,22 @@ import java.util.logging.Logger;
 import rentserver.services.Commands;
 
 public class ClientConnection extends Thread {
-  private static final String WELCOME = "Welcome at Rent Server V0.1";
+  private static final String WELCOME = "Welcome at Rent Server v0.1";
   private static final String[] CLIENT_UI_TYPES = {"console"};
   private static final Logger logger = Logger.getLogger(ClientConnection.class.getName());
   
   private  Socket clientSocket;
   private  int id;
+  private final ClientConnectionsHandler clientConnectionsHandler;
   private  final Scanner sc;
   private  final PrintWriter pw;
   private ClientState clientState = new ClientState();
   private Commands commands = new Commands(clientState);
   
-  ClientConnection(Socket clientSocket, int id) {
+  ClientConnection(Socket clientSocket, int id, ClientConnectionsHandler clientConnectionsHandler1) {
     this.clientSocket = clientSocket;
     this.id = id;
+    this.clientConnectionsHandler = clientConnectionsHandler1;
     
     Scanner sct = null;
     PrintWriter pwt = null;
@@ -96,6 +98,7 @@ public class ClientConnection extends Thread {
     sendToClient("terminate");
     try {
       clientSocket.close();
+      removeFromActiveClientConnections();
     } catch (IOException ex) {
       Logger.getLogger(ClientConnection.class.getName()).log(Level.SEVERE, null, ex);
     }
@@ -106,5 +109,9 @@ public class ClientConnection extends Thread {
       pw.println(command);
       pw.flush();
     }
+  }
+
+  private void removeFromActiveClientConnections() {
+    clientConnectionsHandler.removeFromActiveClientConnections(id);
   }
 }

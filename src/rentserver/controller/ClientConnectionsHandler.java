@@ -52,7 +52,7 @@ public class ClientConnectionsHandler extends Thread {
   }
 
   private void createClientConnection(Socket clientSocket) {
-    ClientConnection clientConnection = new ClientConnection(clientSocket, nextClientConnectionId);
+    ClientConnection clientConnection = new ClientConnection(clientSocket, nextClientConnectionId, this);
     synchronized(activeClientConnections) {
       activeClientConnections.put(nextClientConnectionId, clientConnection);
     }
@@ -95,5 +95,13 @@ public class ClientConnectionsHandler extends Thread {
 
   public void terminate() {
     running = false;
+  }
+  
+  public void removeFromActiveClientConnections(int id) {
+    activeClientConnections.remove(id);
+  }
+
+  public static int getSERVER_SOCKET_TIMEOUT() {
+    return SERVER_SOCKET_TIMEOUT;
   }
 }
