@@ -23,6 +23,7 @@ public class RentServer {
   }
 
   private static boolean rentServerNotYetRunning() throws IOException {
+    //TODO JSSE Java Secure Socket Extension
     try {
       rentServerSocket = new ServerSocket(PORT);
     } catch (BindException ex) {
